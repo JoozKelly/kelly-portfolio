@@ -1,5 +1,5 @@
 import { useGLTF } from '@react-three/drei'
-import { useRef } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 
 import skyScene from '../assets/3d/sky.glb'
@@ -25,16 +25,25 @@ export default Sky */
 
 const Sky = ({ rotationSpeed }) => {
   const skyRef = useRef();
+  const [skyModel, setSkyModel] = useState(null);
+  const { scene } = useGLTF(skyScene);
+
+  useEffect(() => {
+    if (scene) {
+      setSkyModel(scene);
+    }
+  }, [scene]);
 
   useFrame(() => {
-    if (skyRef.current) {
+    if (skyRef.current && rotationSpeed !== 0) {
       skyRef.current.rotation.y += rotationSpeed; // Sync with island
     }
   });
 
   return (
     <mesh ref={skyRef} receiveShadow={false} castShadow={false}>
-      <primitive object={useGLTF(skyScene).scene} />
+      {/* Only render the sky model once it's loaded */}
+      {skyModel && <primitive object={skyModel} />}
     </mesh>
   );
 };

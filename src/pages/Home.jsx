@@ -91,7 +91,7 @@ const Home = () => {
           <hemisphereLight skyColor="#0000FF" groundColor="#000000"
             intensity={0.5} />
 
-          <Sky rotationSpeed={rotationSpeed}
+          <Sky rotationSpeed={isRotating ? rotationSpeed : 0}
           /* distance={450000} */
           /* sunPosition={[0, 0.1, -1]} */  // Sun near the horizon
           /* turbidity={0.9} */           // Minimal haze
