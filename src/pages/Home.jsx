@@ -22,7 +22,7 @@ const Home = () => {
   audioRef.current.loop = true;
   const [isRotating, setIsRotating] = useState(false);
   const [currentStage, setCurrentStage] = useState(1);
-  const [rotationSpeed, setRotationSpeed] = useState(0); // Track rotation speed
+  const [rotationSpeed, setRotationSpeed] = useState(0.01);// Track rotation speed
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
 
 
