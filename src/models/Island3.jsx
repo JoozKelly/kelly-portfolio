@@ -43,11 +43,11 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
     const isTouch = !!e.touches;
     const clientX = isTouch ? e.touches[0].clientX : e.clientX;
   
-    const delta = (clientX - lastX.current) / viewport.width;
-    
-    // Use a unified sensitivity for both touch and pointer
-    const sensitivity = 0.005; // You can fine-tune this
-    const rotationDelta = delta * Math.PI * sensitivity;
+    const deltaX = clientX - lastX.current;
+  
+    // Apply a rotation factor – increase this for more movement
+    const rotationFactor = 0.002; // Try 0.005–0.01 depending on your feel
+    const rotationDelta = deltaX * rotationFactor;
   
     islandRef.current.rotation.y += rotationDelta;
     rotationSpeed.current = rotationDelta;
