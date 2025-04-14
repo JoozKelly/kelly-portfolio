@@ -107,7 +107,7 @@ const renderContent = {
             <br />
             Feel free to follow me on{" "}
             <a
-                href="https://www.instagram.com/your_instagram_handle"
+                href="https://www.instagram.com/jooz_kelly/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-bold text-[#b37337] hover:text-[#eb5c15] transition-all"
