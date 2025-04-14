@@ -39,7 +39,7 @@ const Island = ({
   const updateBikeAnimation = (index) => {
     if (!actions) return;
 
-    const bikeAction = actions["BikeAnimation"]; // Change to your animation name
+    const bikeAction = actions["M_rig_Action_S"]; // Change to your animation name
 
     if (bikeAction) {
       bikeAction.reset().play();
