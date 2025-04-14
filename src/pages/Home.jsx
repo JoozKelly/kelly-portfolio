@@ -116,6 +116,7 @@ const Home = () => {
             castShadow
             receiveShadow
             isRotating={isRotating}
+            rotationSpeed={rotationSpeed} // ✅ Pass the speed here
             scale={bikeScale}
             position={bikePosition}
             rotation={[0, 20.5, 0]}
