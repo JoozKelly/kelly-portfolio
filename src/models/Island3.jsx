@@ -8,7 +8,15 @@ import { a } from "@react-spring/three";
 import islandScene from "../assets/3d/island4.glb";
 import { useFrame, useThree } from "@react-three/fiber";
 
-const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, islandRotation, currentAnimation, ...props }) => {
+const Island = ({
+  isRotating,
+  setIsRotating,
+  setCurrentStage,
+  setRotationSpeed,
+  islandRotation,
+  currentAnimation,
+  ...props
+}) => {
   const islandRef = useRef();
   const { gl, viewport } = useThree();
   const { nodes, materials, animations, scene } = useGLTF(islandScene);
@@ -16,61 +24,66 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
 
   const lastX = useRef(0);
   const rotationSpeed = useRef(0);
-  const dampingFactor = 0.90;
+  const dampingFactor = 0.9;
   const isSwiping = useRef(false);
 
-
   const stageAngles = [
-    3.25, // Stage 1
-    2.85, // Stage 2
-    2.15, // Stage 3
-    1.45, // Stage 4
-    0.75, // Stage 5
-    6.05, // Stage 6
-    5.35, // Stage 7
-    4.65, // Stage 8
-    3.95, // Stage 9
+    3.25, 2.85, 2.15, 1.45, 0.75, 6.05, 5.35, 4.65, 3.95,
   ];
-  
+
   const [mobileStageIndex, setMobileStageIndex] = useState(0);
   const touchStartX = useRef(null);
   const touchEndX = useRef(null);
 
+  // ✅ ADDED: Play forward/backward animation based on swipe
+  const updateBikeAnimation = (index) => {
+    if (!actions) return;
+
+    const bikeAction = actions["BikeAnimation"]; // Change to your animation name
+
+    if (bikeAction) {
+      bikeAction.reset().play();
+
+      // Alternate direction based on swipe stage index
+      bikeAction.timeScale = index % 2 === 0 ? 1 : -1;
+    }
+  };
+
   const handleSwipe = () => {
     const distance = touchStartX.current - touchEndX.current;
-  
-    if (Math.abs(distance) < 30) return; // avoid accidental micro swipes
-  
+
+    if (Math.abs(distance) < 30) return;
+
     let nextIndex;
-  
+
     if (distance > 0) {
-      // Swiped Left → NEXT
       nextIndex = (mobileStageIndex + 1) % stageAngles.length;
     } else {
-      // Swiped Right → PREVIOUS
       nextIndex = (mobileStageIndex - 1 + stageAngles.length) % stageAngles.length;
     }
-  
+
     setMobileStageIndex(nextIndex);
-  
+
     const targetRotation = stageAngles[nextIndex];
-  
     const currentRotation = islandRef.current.rotation.y;
-    const diff = ((targetRotation - currentRotation + Math.PI * 2) % (Math.PI * 2));
+    const diff =
+      ((targetRotation - currentRotation + Math.PI * 2) % (Math.PI * 2));
     const shortestPath = diff > Math.PI ? diff - Math.PI * 2 : diff;
-  
+
     let progress = 0;
-  
+
     const animateRotation = () => {
       if (progress >= 1) return;
       progress += 0.05;
       islandRef.current.rotation.y += shortestPath * 0.05;
       requestAnimationFrame(animateRotation);
     };
-  
+
     animateRotation();
+
+    // ✅ ADDED: Sync bike animation with swipe stage
+    updateBikeAnimation(nextIndex);
   };
-  
 
   const handlePointerDown = (e) => {
     e.stopPropagation();
@@ -91,25 +104,23 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
     e.stopPropagation();
     e.preventDefault();
 
-  
     if (!isRotating || isSwiping.current) return;
-  
+
     const isTouch = !!e.touches;
     const clientX = isTouch ? e.touches[0].clientX : e.clientX;
-  
+
     let sensitivity;
 
-    // Adjust sensitivity based on viewport width (mobile or desktop)
     if (viewport.width < 430) {
-      sensitivity = 0.005; // Higher sensitivity for mobile (iPhone width)
+      sensitivity = 0.005;
     } else {
-      sensitivity = 0.002; // Slower sensitivity for desktop
+      sensitivity = 0.002;
     }
 
     const delta = (clientX - lastX.current) / viewport.width;
     islandRef.current.rotation.y += delta * Math.PI * sensitivity;
     rotationSpeed.current = delta * Math.PI * sensitivity;
-  
+
     lastX.current = clientX;
   };
 
@@ -117,37 +128,36 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
     if (e.key === "ArrowLeft") {
       if (!isRotating) setIsRotating(true);
       islandRef.current.rotation.y += 0.01 * Math.PI;
-      rotationSpeed.current = 0.001 * Math.PI; // Update speed
+      rotationSpeed.current = 0.001 * Math.PI;
     } else if (e.key === "ArrowRight") {
       if (!isRotating) setIsRotating(true);
       islandRef.current.rotation.y -= 0.01 * Math.PI;
-      rotationSpeed.current = -0.001 * Math.PI; // Update speed
+      rotationSpeed.current = -0.001 * Math.PI;
     }
   };
 
   const handleKeyUp = (e) => {
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
       setIsRotating(false);
-      rotationSpeed.current = 0; // Reset speed after release
+      rotationSpeed.current = 0;
     }
   };
-
 
   useFrame(() => {
     if (!isRotating) {
       rotationSpeed.current *= dampingFactor;
-  
+
       if (Math.abs(rotationSpeed.current) < 0.0001) {
         rotationSpeed.current = 0;
       }
-  
+
       islandRef.current.rotation.y += rotationSpeed.current;
     }
-  
-    // This always runs regardless of manual or inertia rotation
+
     const rotation = islandRef.current.rotation.y;
-    const normalizedRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-  
+    const normalizedRotation =
+      ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+
     switch (true) {
       case normalizedRotation >= 3.1 && normalizedRotation <= 3.4:
         setCurrentStage(1);
@@ -179,7 +189,7 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
       default:
         setCurrentStage(null);
     }
-  
+
     setRotationSpeed(rotationSpeed.current);
   });
 
@@ -199,7 +209,6 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
     };
   }, [isRotating]);
 
-
   useEffect(() => {
     if (!currentAnimation || !actions) return;
 
@@ -213,7 +222,7 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
   useEffect(() => {
     console.log("Available animations:", Object.keys(actions));
   }, [actions]);
-  
+
   useEffect(() => {
     const handleTouchStart = (e) => {
       if (window.innerWidth < 430) {
@@ -221,22 +230,21 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
         touchStartX.current = e.touches[0].clientX;
       }
     };
-  
+
     const handleTouchEnd = (e) => {
       if (window.innerWidth < 430) {
         touchEndX.current = e.changedTouches[0].clientX;
         handleSwipe();
-  
-        // After swipe animation starts, reset isSwiping after delay
+
         setTimeout(() => {
           isSwiping.current = false;
-        }, 400); // Adjust if animation duration changes
+        }, 400);
       }
     };
-  
+
     window.addEventListener("touchstart", handleTouchStart);
     window.addEventListener("touchend", handleTouchEnd);
-  
+
     return () => {
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchend", handleTouchEnd);
