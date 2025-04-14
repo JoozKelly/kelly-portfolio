@@ -12,6 +12,8 @@ import HomeInfo from '../components/HomeInfo';
 
 import sakura from '../assets/sakura.mp3'
 import { soundon, soundoff } from '../assets/icons';
+import CameraZoomController from '../components/CameraZoomController';
+
 
 
 const Home = () => {
@@ -23,15 +25,16 @@ const Home = () => {
   const [rotationSpeed, setRotationSpeed] = useState(0); // Track rotation speed
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
 
+
   useEffect(() => {
-    if(isPlayingMusic) {
+    if (isPlayingMusic) {
       audioRef.current.play();
     }
     return () => {
       audioRef.current.pause();
     }
   }, [isPlayingMusic])
-  
+
 
   const adjustIslandForScreenSize = () => {
     let screenScale = null;
@@ -75,10 +78,11 @@ const Home = () => {
         shadows
         className={`w-full h-screen bg-transparent ${isRotating ?
           'cursor-grabbing' : 'cursor-grab'}`}
-        camera={{ near: 0.1, far: 1000, fov: 75}}
+        camera={{ near: 0.1, far: 1000, fov: 75 }}
 
       >
         <Suspense fallback={<Loader />}>
+          <CameraZoomController />
           <directionalLight position={[5, 10, 5]} intensity={1.5}
             castShadow
             shadow-mapSize-width={1024}
@@ -121,7 +125,7 @@ const Home = () => {
       </Canvas>
 
       <div className="absolute bottom-2 left-2">
-        <img 
+        <img
           src={!isPlayingMusic ? soundoff : soundon}
           alt="sound"
           className="w-10 h-10 cursor-pointer object-contain"
