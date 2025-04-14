@@ -17,7 +17,6 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
   const lastX = useRef(0);
   const rotationSpeed = useRef(0);
   const dampingFactor = 0.90;
-  const rigRef = useRef();
 
   const handlePointerDown = (e) => {
     e.stopPropagation();
@@ -43,18 +42,18 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
     const isTouch = !!e.touches;
     const clientX = isTouch ? e.touches[0].clientX : e.clientX;
   
-    if (isTouch) {
-      // --- Improved mobile (similar to desktop) ---
-      const delta = (clientX - lastX.current) / viewport.width;
-      const sensitivity = 0.01; // higher sensitivity for touch
-      islandRef.current.rotation.y += delta * Math.PI * sensitivity;
-      rotationSpeed.current = delta * Math.PI * sensitivity;
+    let sensitivity;
+
+    // Adjust sensitivity based on viewport width (mobile or desktop)
+    if (viewport.width < 300) {
+      sensitivity = 0.009; // Higher sensitivity for mobile (iPhone width)
     } else {
-      // --- Desktop stays unchanged ---
-      const delta = (clientX - lastX.current) / viewport.width;
-      islandRef.current.rotation.y += delta * Math.PI * 0.005;
-      rotationSpeed.current = delta * Math.PI * 0.005;
+      sensitivity = 0.002; // Slower sensitivity for desktop
     }
+
+    const delta = (clientX - lastX.current) / viewport.width;
+    islandRef.current.rotation.y += delta * Math.PI * sensitivity;
+    rotationSpeed.current = delta * Math.PI * sensitivity;
   
     lastX.current = clientX;
   };
@@ -127,24 +126,22 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
   
     setRotationSpeed(rotationSpeed.current);
   });
-  
 
   useEffect(() => {
-    const canvas = gl.domElement;
-    canvas.addEventListener("pointerdown", handlePointerDown);
-    canvas.addEventListener("pointerup", handlePointerUp);
-    canvas.addEventListener("pointermove", handlePointerMove);
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      canvas.removeEventListener("pointerdown", handlePointerDown);
-      canvas.removeEventListener("pointerup", handlePointerUp);
-      canvas.removeEventListener("pointermove", handlePointerMove);
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [gl, handlePointerDown, handlePointerUp, handlePointerMove]);
+  }, [isRotating]);
 
   useEffect(() => {
     if (!currentAnimation || !actions) return;
