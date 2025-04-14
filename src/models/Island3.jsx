@@ -8,6 +8,7 @@ import { a } from "@react-spring/three";
 import islandScene from "../assets/3d/island4.glb";
 import { useFrame, useThree } from "@react-three/fiber";
 
+
 const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, islandRotation, currentAnimation, ...props }) => {
   const islandRef = useRef();
   const { gl, viewport } = useThree();
@@ -17,7 +18,7 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
   const lastX = useRef(0);
   const rotationSpeed = useRef(0);
   const dampingFactor = 0.95;
-  const rigRef = useRef();
+  const lastTime = useRef(0); // To calculate delta time for smoother movement
 
   const handlePointerDown = (e) => {
     e.stopPropagation();
@@ -39,22 +40,26 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
     e.preventDefault();
   
     if (!isRotating) return;
-  
+
     const isTouch = !!e.touches;
     const clientX = isTouch ? e.touches[0].clientX : e.clientX;
-  
+
+    const now = Date.now();
+    const deltaTime = now - lastTime.current || 16; // Fallback to ~60fps frame
     const deltaX = clientX - lastX.current;
-  
-    // Apply a rotation factor – increase this for more movement
-    const rotationFactor = 0.002; // Try 0.005–0.01 depending on your feel
+
+    // Rotation factors (slower for desktop, smoother for mobile)
+    const rotationFactor = isTouch ? 0.01 : 0.0009; // Slower for desktop
     const rotationDelta = deltaX * rotationFactor;
-  
+
+    // Smooth the damping transition
     islandRef.current.rotation.y += rotationDelta;
-    rotationSpeed.current = rotationDelta;
-  
+    rotationSpeed.current = rotationDelta / (deltaTime / 16); // Normalize to 60fps
+
     lastX.current = clientX;
+    lastTime.current = now;
   };
-  
+
   const handleKeyDown = (e) => {
     if (e.key === "ArrowLeft") {
       if (!isRotating) setIsRotating(true);
