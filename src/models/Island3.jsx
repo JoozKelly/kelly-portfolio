@@ -8,7 +8,6 @@ import { a } from "@react-spring/three";
 import islandScene from "../assets/3d/island4.glb";
 import { useFrame, useThree } from "@react-three/fiber";
 
-
 const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, islandRotation, currentAnimation, ...props }) => {
   const islandRef = useRef();
   const { gl, viewport } = useThree();
@@ -17,8 +16,8 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
 
   const lastX = useRef(0);
   const rotationSpeed = useRef(0);
-  const dampingFactor = 0.95;
-  const lastTime = useRef(0); // To calculate delta time for smoother movement
+  const dampingFactor = 0.90;
+  const rigRef = useRef();
 
   const handlePointerDown = (e) => {
     e.stopPropagation();
@@ -38,26 +37,31 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
   const handlePointerMove = (e) => {
     e.stopPropagation();
     e.preventDefault();
-  
+
     if (!isRotating) return;
 
     const isTouch = !!e.touches;
     const clientX = isTouch ? e.touches[0].clientX : e.clientX;
 
-    const now = Date.now();
-    const deltaTime = now - lastTime.current || 16; // Fallback to ~60fps frame
-    const deltaX = clientX - lastX.current;
+    if (isTouch) {
+      // --- Mobile version (smooth, clamped) ---
+      const deltaX = clientX - lastX.current;
+      const maxDelta = 60; // prevent big jumps on swipe
+      const clampedDelta = Math.max(-maxDelta, Math.min(maxDelta, deltaX));
+      const normalizedDelta = clampedDelta / window.innerWidth;
 
-    // Rotation factors (slower for desktop, smoother for mobile)
-    const rotationFactor = isTouch ? 0.01 : 0.0009; // Slower for desktop
-    const rotationDelta = deltaX * rotationFactor;
+      const rotationDelta = normalizedDelta * Math.PI * 0.035; // more sensitive for touch
+      islandRef.current.rotation.y += rotationDelta;
+      rotationSpeed.current = rotationDelta;
+    } else {
+      // --- Desktop version (your original logic) ---
+      const delta = (clientX - lastX.current) / viewport.width;
 
-    // Smooth the damping transition
-    islandRef.current.rotation.y += rotationDelta;
-    rotationSpeed.current = rotationDelta / (deltaTime / 16); // Normalize to 60fps
+      islandRef.current.rotation.y += delta * Math.PI * 0.005;
+      rotationSpeed.current = delta * 0.005 * Math.PI;
+    }
 
     lastX.current = clientX;
-    lastTime.current = now;
   };
 
   const handleKeyDown = (e) => {
