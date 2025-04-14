@@ -75,7 +75,7 @@ const Home = () => {
         shadows
         className={`w-full h-screen bg-transparent ${isRotating ?
           'cursor-grabbing' : 'cursor-grab'}`}
-        camera={{ near: 0.1, far: 1000 }}
+        camera={{ near: 0.1, far: 1000, fov: 75 }}
 
       >
         <Suspense fallback={<Loader />}>
