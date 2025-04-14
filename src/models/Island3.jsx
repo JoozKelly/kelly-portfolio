@@ -45,7 +45,7 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
     let sensitivity;
 
     // Adjust sensitivity based on viewport width (mobile or desktop)
-    if (viewport.width < 300) {
+    if (viewport.width < 430) {
       sensitivity = 0.005; // Higher sensitivity for mobile (iPhone width)
     } else {
       sensitivity = 0.002; // Slower sensitivity for desktop

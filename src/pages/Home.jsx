@@ -35,13 +35,34 @@ const Home = () => {
     }
   }, [isPlayingMusic])
 
+  // Adjust rotation speed based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 430) {
+        setRotationSpeed(0); // Freeze sky rotation on mobile devices
+      } else {
+        setRotationSpeed(0.01); // Normal speed for larger screens
+      }
+    };
+
+    // Set initial speed on load
+    handleResize();
+
+    // Add resize listener
+    window.addEventListener('resize', handleResize);
+
+    // Clean up listener on component unmount
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+
 
   const adjustIslandForScreenSize = () => {
     let screenScale = null;
     let screenPosition = [0, -0.9, -1.9];
     let rotation = [0.1, 3.4, 0];
 
-    if (window.innerWidth < 768) {
+    if (window.innerWidth < 430) {
       screenScale = [1, 1, 1];
     } else {
       screenScale = [1, 1, 1];
@@ -53,7 +74,7 @@ const Home = () => {
   const adjustBikeForScreenSize = () => {
     let screenScale, screenPosition;
 
-    if (window.innerWidth < 768) {
+    if (window.innerWidth < 430) {
       screenScale = [1.5, 1.5, 1.5];
       screenPosition = [0, -1.5, 0];
     } else {
