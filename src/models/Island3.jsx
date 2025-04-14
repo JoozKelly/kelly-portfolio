@@ -37,33 +37,24 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
   const handlePointerMove = (e) => {
     e.stopPropagation();
     e.preventDefault();
-
+  
     if (!isRotating) return;
-
+  
     const isTouch = !!e.touches;
     const clientX = isTouch ? e.touches[0].clientX : e.clientX;
-
-    if (isTouch) {
-      // --- Mobile version (smooth, clamped) ---
-      const deltaX = clientX - lastX.current;
-      const maxDelta = 60; // prevent big jumps on swipe
-      const clampedDelta = Math.max(-maxDelta, Math.min(maxDelta, deltaX));
-      const normalizedDelta = clampedDelta / window.innerWidth;
-
-      const rotationDelta = normalizedDelta * Math.PI * 0.035; // more sensitive for touch
-      islandRef.current.rotation.y += rotationDelta;
-      rotationSpeed.current = rotationDelta;
-    } else {
-      // --- Desktop version (your original logic) ---
-      const delta = (clientX - lastX.current) / viewport.width;
-
-      islandRef.current.rotation.y += delta * Math.PI * 0.005;
-      rotationSpeed.current = delta * 0.005 * Math.PI;
-    }
-
+  
+    const delta = (clientX - lastX.current) / viewport.width;
+    
+    // Use a unified sensitivity for both touch and pointer
+    const sensitivity = 0.005; // You can fine-tune this
+    const rotationDelta = delta * Math.PI * sensitivity;
+  
+    islandRef.current.rotation.y += rotationDelta;
+    rotationSpeed.current = rotationDelta;
+  
     lastX.current = clientX;
   };
-
+  
   const handleKeyDown = (e) => {
     if (e.key === "ArrowLeft") {
       if (!isRotating) setIsRotating(true);
