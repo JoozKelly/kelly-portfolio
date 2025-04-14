@@ -11,12 +11,12 @@ const Legal = () => {
         drop-shadow">Credits</span>
             </h1>
 
-            <div className="text-2xl font-poppins my-10 gap-16">
+            <div className="lg:text-2xl font-poppins my-10 gap-16 sm:text-xl sm:leading-snug">
                 <p > Thanks to all Sketchfab users who provided their 3D assets and made this project possible, any many
                     thanks to Thaddeus Trystan for editing each assets:</p>
             </div>
 
-            <h4 className="text-2xl font-poppins my-10 gap-16">
+            <h4 className="lg:text-2xl font-poppins my-10 gap-16 sm:text-xl sm:leading-snug">
                 iangchang - Robo Bomb <br />
                 Denys Almaral - Idle 2 Male <br />
                 Romain Perrone - Taipei 101 <br />
@@ -38,8 +38,8 @@ const Legal = () => {
         drop-shadow">Disclaimer</span>
             </h1>
 
-            <div className="text-2xl font-poppins my-10 gap-16">
-                <p > If you require any more information or have any questions about my 
+            <div className="lg:text-2xl font-poppins my-10 gap-16 sm:text-xl sm:leading-snug">
+                <p> If you require any more information or have any questions about my 
                     site's disclaimer, please feel free to contact me by email at joozkelly12@gmail.com.
                     <br /> <br />
                     All the information on this website - kellygluecktayong.com - is published in good faith and 
@@ -65,7 +65,7 @@ const Legal = () => {
         drop-shadow">Consent</span>
             </h1>
 
-            <div className="text-2xl font-poppins my-10 gap-16">
+            <div className="lg:text-2xl font-poppins my-10 gap-16 sm:text-xl sm:leading-snug">
                 <p > By using my website, you hereby consent to my disclaimer and agree to its terms.
                     </p>
             </div>
@@ -75,7 +75,7 @@ const Legal = () => {
         drop-shadow">Update</span>
             </h1>
 
-            <div className="text-2xl font-poppins my-10 gap-16">
+            <div className="lg:text-2xl font-poppins my-10 gap-16 sm:text-xl sm:leading-snug">
                 <p > Should I update, amend or make any changes to this document, those changes will be prominently posted here.
                     </p>
             </div>
