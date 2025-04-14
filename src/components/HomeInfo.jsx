@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { arrow } from '../assets/icons';
 import llama from '../assets/llama.png';
 import rag from '../assets/rag.png';
-import vb from '../assets/vb.png'
-import isc from '../assets/isc.png'
+import vb from '../assets/vb.png';
+import isc from '../assets/isc.png';
+import { useTransition, animated } from '@react-spring/web';
+
 
 
 const InfoBox = ({ text, link, btnText }) => (
@@ -120,7 +122,25 @@ const renderContent = {
 
 
 const HomeInfo = ({ currentStage }) => {
-    return renderContent[currentStage] || null;
-}
+    const [activeStage, setActiveStage] = useState(currentStage);
+  
+    const transitions = useTransition(currentStage, {
+      from: { opacity: 0, transform: 'translateY(10px)' },
+      enter: { opacity: 1, transform: 'translateY(0px)' },
+      leave: { opacity: 0, transform: 'translateY(-10px)' },
+      config: { duration: 400 },
+      onChange: () => setActiveStage(currentStage),
+    });
+  
+    return transitions((styles, item) =>
+        item && renderContent[item] ? (
+          <div className="w-full flex justify-center mt-1 absolute top-0 left-0 z-10">
+            <animated.div style={styles}>
+              {renderContent[item]}
+            </animated.div>
+          </div>
+        ) : null
+    );
+  };
 
 export default HomeInfo

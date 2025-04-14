@@ -37,30 +37,25 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
   const handlePointerMove = (e) => {
     e.stopPropagation();
     e.preventDefault();
-
+  
     if (!isRotating) return;
-
+  
     const isTouch = !!e.touches;
     const clientX = isTouch ? e.touches[0].clientX : e.clientX;
-
+  
     if (isTouch) {
-      // --- Mobile version (smooth, clamped) ---
-      const deltaX = clientX - lastX.current;
-      const maxDelta = 60; // prevent big jumps on swipe
-      const clampedDelta = Math.max(-maxDelta, Math.min(maxDelta, deltaX));
-      const normalizedDelta = clampedDelta / window.innerWidth;
-
-      const rotationDelta = normalizedDelta * Math.PI * 0.035; // more sensitive for touch
-      islandRef.current.rotation.y += rotationDelta;
-      rotationSpeed.current = rotationDelta;
-    } else {
-      // --- Desktop version (your original logic) ---
+      // --- Improved mobile (similar to desktop) ---
       const delta = (clientX - lastX.current) / viewport.width;
-
+      const sensitivity = 0.01; // higher sensitivity for touch
+      islandRef.current.rotation.y += delta * Math.PI * sensitivity;
+      rotationSpeed.current = delta * Math.PI * sensitivity;
+    } else {
+      // --- Desktop stays unchanged ---
+      const delta = (clientX - lastX.current) / viewport.width;
       islandRef.current.rotation.y += delta * Math.PI * 0.005;
-      rotationSpeed.current = delta * 0.005 * Math.PI;
+      rotationSpeed.current = delta * Math.PI * 0.005;
     }
-
+  
     lastX.current = clientX;
   };
 
@@ -86,52 +81,53 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
   useFrame(() => {
     if (!isRotating) {
       rotationSpeed.current *= dampingFactor;
-
+  
       if (Math.abs(rotationSpeed.current) < 0.0001) {
         rotationSpeed.current = 0;
       }
-
+  
       islandRef.current.rotation.y += rotationSpeed.current;
-    } else {
-      const rotation = islandRef.current.rotation.y;
-      const normalizedRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-
-      // Set the current stage based on the island's orientation
-      switch (true) {
-        case normalizedRotation >= 3.1 && normalizedRotation <= 3.4:
-          setCurrentStage(1);
-          break;
-        case normalizedRotation >= 3.8 && normalizedRotation <= 4.1:
-          setCurrentStage(9);
-          break;
-        case normalizedRotation >= 4.5 && normalizedRotation <= 4.8:
-          setCurrentStage(8);
-          break;
-        case normalizedRotation >= 5.2 && normalizedRotation <= 5.5:
-          setCurrentStage(7);
-          break;
-        case normalizedRotation >= 5.9 && normalizedRotation <= 6.2:
-          setCurrentStage(6);
-          break;
-        case normalizedRotation >= 0.6 && normalizedRotation <= 0.9:
-          setCurrentStage(5);
-          break;
-        case normalizedRotation >= 1.3 && normalizedRotation <= 1.6:
-          setCurrentStage(4);
-          break;
-        case normalizedRotation >= 2.0 && normalizedRotation <= 2.3:
-          setCurrentStage(3);
-          break;
-        case normalizedRotation >= 2.7 && normalizedRotation <= 3.0:
-          setCurrentStage(2);
-          break;
-        default:
-          setCurrentStage(null);
-      }
     }
-
+  
+    // This always runs regardless of manual or inertia rotation
+    const rotation = islandRef.current.rotation.y;
+    const normalizedRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  
+    switch (true) {
+      case normalizedRotation >= 3.1 && normalizedRotation <= 3.4:
+        setCurrentStage(1);
+        break;
+      case normalizedRotation >= 3.8 && normalizedRotation <= 4.1:
+        setCurrentStage(9);
+        break;
+      case normalizedRotation >= 4.5 && normalizedRotation <= 4.8:
+        setCurrentStage(8);
+        break;
+      case normalizedRotation >= 5.2 && normalizedRotation <= 5.5:
+        setCurrentStage(7);
+        break;
+      case normalizedRotation >= 5.9 && normalizedRotation <= 6.2:
+        setCurrentStage(6);
+        break;
+      case normalizedRotation >= 0.6 && normalizedRotation <= 0.9:
+        setCurrentStage(5);
+        break;
+      case normalizedRotation >= 1.3 && normalizedRotation <= 1.6:
+        setCurrentStage(4);
+        break;
+      case normalizedRotation >= 2.0 && normalizedRotation <= 2.3:
+        setCurrentStage(3);
+        break;
+      case normalizedRotation >= 2.7 && normalizedRotation <= 3.0:
+        setCurrentStage(2);
+        break;
+      default:
+        setCurrentStage(null);
+    }
+  
     setRotationSpeed(rotationSpeed.current);
   });
+  
 
   useEffect(() => {
     const canvas = gl.domElement;
