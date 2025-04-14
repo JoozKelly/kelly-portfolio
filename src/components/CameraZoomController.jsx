@@ -10,7 +10,7 @@ const CameraZoomController = () => {
 
       const zoomSpeed = 2; // Smaller number = slower zoom
       const minFov = 75;
-      const maxFov = 100;
+      const maxFov = 85;
 
       camera.fov += e.deltaY * 0.02 * zoomSpeed;
       camera.fov = Math.max(minFov, Math.min(maxFov, camera.fov));

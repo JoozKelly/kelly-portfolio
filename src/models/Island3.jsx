@@ -43,18 +43,31 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
   const handlePointerMove = (e) => {
     e.stopPropagation();
     e.preventDefault();
-
-    if (isRotating) {
-      const clientX = e.touches
-        ? e.touches[0].clientX
-        : e.clientX;
-
+  
+    if (!isRotating) return;
+  
+    const isTouch = !!e.touches;
+    const clientX = isTouch ? e.touches[0].clientX : e.clientX;
+  
+    if (isTouch) {
+      // --- Mobile version (smooth, clamped) ---
+      const deltaX = clientX - lastX.current;
+      const maxDelta = 60; // prevent big jumps on swipe
+      const clampedDelta = Math.max(-maxDelta, Math.min(maxDelta, deltaX));
+      const normalizedDelta = clampedDelta / window.innerWidth;
+  
+      const rotationDelta = normalizedDelta * Math.PI * 0.035; // more sensitive for touch
+      islandRef.current.rotation.y += rotationDelta;
+      rotationSpeed.current = rotationDelta;
+    } else {
+      // --- Desktop version (your original logic) ---
       const delta = (clientX - lastX.current) / viewport.width;
-
+  
       islandRef.current.rotation.y += delta * Math.PI * 0.01;
-      lastX.current = clientX;
       rotationSpeed.current = delta * 0.01 * Math.PI;
     }
+  
+    lastX.current = clientX;
   }
 
   const handleKeyDown = (e) => {
