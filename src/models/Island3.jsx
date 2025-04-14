@@ -10,65 +10,59 @@ import { useFrame, useThree } from "@react-three/fiber";
 
 const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, islandRotation, currentAnimation, ...props }) => {
   const islandRef = useRef();
-
   const { gl, viewport } = useThree();
   const { nodes, materials, animations, scene } = useGLTF(islandScene);
   const { actions } = useAnimations(animations, islandRef);
-  
 
   const lastX = useRef(0);
   const rotationSpeed = useRef(0);
   const dampingFactor = 0.95;
   const rigRef = useRef();
-  
 
   const handlePointerDown = (e) => {
     e.stopPropagation();
     e.preventDefault();
     setIsRotating(true);
 
-    const clientX = e.touches
-      ? e.touches[0].clientX
-      : e.clientX;
-
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     lastX.current = clientX;
-  }
+  };
 
   const handlePointerUp = (e) => {
     e.stopPropagation();
     e.preventDefault();
     setIsRotating(false);
-  }
+  };
 
   const handlePointerMove = (e) => {
     e.stopPropagation();
     e.preventDefault();
-  
+
     if (!isRotating) return;
-  
+
     const isTouch = !!e.touches;
     const clientX = isTouch ? e.touches[0].clientX : e.clientX;
-  
+
     if (isTouch) {
       // --- Mobile version (smooth, clamped) ---
       const deltaX = clientX - lastX.current;
       const maxDelta = 60; // prevent big jumps on swipe
       const clampedDelta = Math.max(-maxDelta, Math.min(maxDelta, deltaX));
       const normalizedDelta = clampedDelta / window.innerWidth;
-  
+
       const rotationDelta = normalizedDelta * Math.PI * 0.035; // more sensitive for touch
       islandRef.current.rotation.y += rotationDelta;
       rotationSpeed.current = rotationDelta;
     } else {
       // --- Desktop version (your original logic) ---
       const delta = (clientX - lastX.current) / viewport.width;
-  
+
       islandRef.current.rotation.y += delta * Math.PI * 0.01;
       rotationSpeed.current = delta * 0.01 * Math.PI;
     }
-  
+
     lastX.current = clientX;
-  }
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === "ArrowLeft") {
@@ -80,14 +74,14 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
       islandRef.current.rotation.y -= 0.01 * Math.PI;
       rotationSpeed.current = -0.001 * Math.PI; // Update speed
     }
-  }
+  };
 
   const handleKeyUp = (e) => {
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
       setIsRotating(false);
       rotationSpeed.current = 0; // Reset speed after release
     }
-  }
+  };
 
   useFrame(() => {
     if (!isRotating) {
@@ -100,7 +94,6 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
       islandRef.current.rotation.y += rotationSpeed.current;
     } else {
       const rotation = islandRef.current.rotation.y;
-
       const normalizedRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
       // Set the current stage based on the island's orientation
@@ -138,7 +131,7 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
     }
 
     setRotationSpeed(rotationSpeed.current);
-  })
+  });
 
   useEffect(() => {
     const canvas = gl.domElement;
@@ -154,19 +147,19 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, setRotationSpeed, 
       canvas.removeEventListener("pointermove", handlePointerMove);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
-    }
-  }, [gl, handlePointerDown, handlePointerUp, handlePointerMove])
+    };
+  }, [gl, handlePointerDown, handlePointerUp, handlePointerMove]);
 
   useEffect(() => {
     if (!currentAnimation || !actions) return;
-  
+
     Object.values(actions).forEach((action) => action.stop());
-  
+
     if (actions[currentAnimation]) {
       actions[currentAnimation].reset().play();
     }
   }, [actions, currentAnimation]);
-  
+
   useEffect(() => {
     console.log("Available animations:", Object.keys(actions));
   }, [actions]);
