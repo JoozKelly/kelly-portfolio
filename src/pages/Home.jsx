@@ -1,7 +1,6 @@
 import React, { useState, Suspense, useEffect, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Loader from '../components/Loader'
-import ProgressBar from "../components/ProgressBar";
 
 
 import Island from '../models/Island3';
@@ -155,8 +154,6 @@ const Home = () => {
           onClick={() => setIsPlayingMusic(!isPlayingMusic)}
         />
       </div>
-
-      <ProgressBar currentStage={currentStage} />
 
     </section>
   )
