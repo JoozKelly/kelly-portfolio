@@ -1,6 +1,8 @@
 import React, { useState, Suspense, useEffect, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Loader from '../components/Loader'
+import ProgressBar from "../components/ProgressBar";
+
 
 import Island from '../models/Island3';
 /* import { Sky } from '@react-three/drei'; */
@@ -13,8 +15,6 @@ import HomeInfo from '../components/HomeInfo';
 import sakura from '../assets/sakura.mp3'
 import { soundon, soundoff } from '../assets/icons';
 import CameraZoomController from '../components/CameraZoomController';
-
-
 
 const Home = () => {
   const audioRef = useRef(new Audio(sakura));
@@ -89,6 +89,7 @@ const Home = () => {
     adjustIslandForScreenSize();
   const [bikeScale, bikePosition] = adjustBikeForScreenSize();
 
+  
   return (
     <section className="w-full h-screen relative">
       <div className="absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
@@ -154,6 +155,9 @@ const Home = () => {
           onClick={() => setIsPlayingMusic(!isPlayingMusic)}
         />
       </div>
+
+      <ProgressBar currentStage={currentStage} />
+
     </section>
   )
 }
