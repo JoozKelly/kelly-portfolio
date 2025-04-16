@@ -97,9 +97,9 @@ const renderContent = {
     ),
     8: (
         <InfoBox
-            text={<span className="text-black sm:text-balance sm:leading-snug"> Today, I spend most of my time <span className="font-semibold">programming my ideas</span> to broaden my skills. Following are some of my recent <span className="font-semibold">projects</span>.</span>}
+            text={<span className="text-black sm:text-balance sm:leading-snug"> Today, I spend most of my time <span className="font-semibold">programming my ideas and do things I love</span> to broaden my skills. Following are some of my recent <span className="font-semibold">projects and activities</span> .</span>}
             link="/projects"
-            btnText="View Projects"
+            btnText="View Projects & Activities"
         />
     ),
     9: (
