@@ -7,7 +7,6 @@ import threeh from '../assets/3h.png'
 import ceVideo from '../assets/Basics_with_Violet.mp4'
 import ceVideo2 from '../assets/Violet_and_Siow_Ik.mp4'
 import ceVideo3 from '../assets/Rui_Ming.mp4'
-import ceVideo4 from '../assets/Cheerful_Pierre_and_Violet.mp4'
 import cep from '../assets/5ce.jpg'
 
 const CE = () => {
@@ -159,19 +158,6 @@ const CE = () => {
           This practice allowed students to share their key takeaways while also providing valuable feedback,
           helping us refine and enhance each session to be more engaging and meaningful for them.  <br /> <br />
         </p>
-
-        <br />
-
-        <video
-          src={ceVideo4}
-          className="w-full h-auto mt-10 rounded-lg"
-          controls
-          autoPlay
-          loop
-          muted
-        />
-
-        <br />
 
         <p className="subsubhead-text">
           This experience has been filled with invaluable lessons, cherished memories, and immense joy.
